@@ -1,0 +1,133 @@
+const inquirer = require('inquirer');
+const mysql = require('mysql2');
+
+// Importing modules from the lib folder
+const Department = require('./lib/Department');
+const Role = require('./lib/Role');
+const Employee = require('./lib/Employee');
+
+// Importing Inquirer menu prompts
+const { mainMenuPrompt, addDepartmentPrompt, addRolePrompt, addEmployeePrompt } = require('./utils/inquirerMenus');
+
+// Database connection setup (assuming you have a db/config.js file)
+const dbConfig = require('./db/config');
+const connection = mysql.createConnection(dbConfig);
+
+connection.connect(err => {
+  if (err) throw err;
+  console.log('Connected to the employee management system database.');
+  mainMenu();
+});
+
+function mainMenu() {
+  inquirer.prompt(mainMenuPrompt)
+    .then(answer => {
+      switch (answer.action) {
+        case 'View All Departments':
+          viewDepartments();
+          break;
+        case 'View All Roles':
+          viewRoles();
+          break;
+        case 'View All Employees':
+          viewEmployees();
+          break;
+        case 'Add a Department':
+          addDepartment();
+          break;
+        case 'Add a Role':
+          addRole();
+          break;
+        case 'Add an Employee':
+          addEmployee();
+          break;
+        case 'Update an Employee Role':
+          updateEmployeeRole();
+          break;
+        case 'Exit':
+          connection.end();
+          break;
+        default:
+          console.log(`Invalid action: ${answer.action}`);
+          mainMenu();
+          break;
+      }
+    })
+    .catch(error => {
+      console.error('Error occurred:', error);
+      mainMenu();
+    });
+}
+
+function viewDepartments() {
+  // Placeholder for actual function to view departments
+  console.log('Viewing all departments...');
+  // Example: Department.viewAll();
+  mainMenu();
+}
+
+function viewRoles() {
+  // Placeholder for actual function to view roles
+  console.log('Viewing all roles...');
+  // Example: Role.viewAll();
+  mainMenu();
+}
+
+function viewEmployees() {
+  // Placeholder for actual function to view employees
+  console.log('Viewing all employees...');
+  // Example: Employee.viewAll();
+  mainMenu();
+}
+
+function addDepartment() {
+  inquirer.prompt(addDepartmentPrompt)
+    .then(answer => {
+      // Placeholder for actual function to add department
+      console.log(`Adding department: ${answer.departmentName}`);
+      // Example: Department.add(answer.departmentName);
+      mainMenu();
+    })
+    .catch(error => {
+      console.error('Error occurred:', error);
+      mainMenu();
+    });
+}
+
+function addRole() {
+  inquirer.prompt(addRolePrompt)
+    .then(answer => {
+      // Placeholder for actual function to add role
+      console.log(`Adding role: ${answer.roleName}`);
+      // Example: Role.add(answer);
+      mainMenu();
+    })
+    .catch(error => {
+      console.error('Error occurred:', error);
+      mainMenu();
+    });
+}
+
+function addEmployee() {
+  inquirer.prompt(addEmployeePrompt)
+    .then(answer => {
+      // Placeholder for actual function to add employee
+      console.log(`Adding employee: ${answer.firstName} ${answer.lastName}`);
+      // Example: Employee.add(answer);
+      mainMenu();
+    })
+    .catch(error => {
+      console.error('Error occurred:', error);
+      mainMenu();
+    });
+}
+
+function updateEmployeeRole() {
+  // Placeholder for actual function to update employee role
+  console.log('Updating employee role...');
+  // Example: Employee.updateRole();
+  mainMenu();
+}
+
+// Start the application
+mainMenu();
