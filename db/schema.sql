@@ -1,6 +1,6 @@
 -- DATABASE
-CREATE DATABASE IF NOT EXISTS CMS;
-USE CMS;
+CREATE DATABASE IF NOT EXISTS employee_db;
+USE employee_db;
 
 -- Departments
 CREATE TABLE IF NOT EXISTS `departments` (
