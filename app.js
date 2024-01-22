@@ -1,5 +1,5 @@
 const connection = require('./db/config');
-const { mainMenu } = require('./utils/inquirerMenus');
+const {mainMenu} = require('./utils/inquirerMenus');
 
 
 connection.connect(err => {
