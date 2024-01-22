@@ -7,62 +7,86 @@ const Role = require('../lib/Role');
 
 function mainMenu() {
   inquirer.prompt([
-    {
-      type: 'list',
-      name: 'action',
-      message: 'What would you like to do?',
-      choices: [
-        'View All Departments',
-        // ... other choices ...
-        'Update an Employee Role',
-        'Update Employee Manager',
-        'View Employees by Manager',
-        'View Employees by Department',
-        'Delete Department',
-        'Delete Role',
-        'Delete Employee',
-        'View Department Budget',
-        'Exit'
-      ]
-    }
+      {
+          type: 'list',
+          name: 'action',
+          message: 'What would you like to do?',
+          choices: [
+              'View All Departments',
+              'View All Roles',
+              'View All Employees',
+              'Add a Department',
+              'Add a Role',
+              'Add an Employee',
+              'Update an Employee Role',
+              'Update Employee Manager',
+              'View Employees by Manager',
+              'View Employees by Department',
+              'Delete Department',
+              'Delete Role',
+              'Delete Employee',
+              'View Department Budget',
+              'Exit'
+          ]
+      }
   ])
   .then(answer => {
-    // ... existing switch cases ...
-    switch (answer.action) {
-      // ... existing cases ...
-      case 'Update Employee Manager':
-        updateEmployeeManager();
-        break;
-      case 'View Employees by Manager':
-        viewEmployeesByManager();
-        break;
-      case 'View Employees by Department':
-        viewEmployeesByDepartment();
-        break;
-      case 'Delete Department':
-        deleteDepartment();
-        break;
-      case 'Delete Role':
-        deleteRole();
-        break;
-      case 'Delete Employee':
-        deleteEmployee();
-        break;
-      case 'View Department Budget':
-        viewDepartmentBudget();
-        break;
-      case 'Exit':
-        connection.end();
-        break;
-      default:
-        console.log(`Invalid action: ${answer.action}`);
-        mainMenu();
-        break;
-    }
+      switch (answer.action) {
+          case 'View All Departments':
+              viewDepartments();
+              break;
+          case 'View All Roles':
+              viewRoles();
+              break;
+          case 'View All Employees':
+              viewEmployees();
+              break;
+          case 'Add a Department':
+              addDepartment();
+              break;
+          case 'Add a Role':
+              addRole();
+              break;
+          case 'Add an Employee':
+              addEmployee();
+              break;
+          case 'Update an Employee Role':
+              updateEmployeeRole();
+              break;
+          case 'Update Employee Manager':
+              updateEmployeeManager();
+              break;
+          case 'View Employees by Manager':
+              viewEmployeesByManager();
+              break;
+          case 'View Employees by Department':
+              viewEmployeesByDepartment();
+              break;
+          case 'Delete Department':
+              deleteDepartment();
+              break;
+          case 'Delete Role':
+              deleteRole();
+              break;
+          case 'Delete Employee':
+              deleteEmployee();
+              break;
+          case 'View Department Budget':
+              viewDepartmentBudget();
+              break;
+          case 'Exit':
+              console.log("Goodbye!");
+              connection.end();
+              break;
+          default:
+              console.log(`Invalid action: ${answer.action}`);
+              mainMenu();
+              break;
+      }
   })
   .catch(error => {
-    console.error(`Error: ${error.message}`);
-    mainMenu();
+      console.error(`Error: ${error.message}`);
+      mainMenu();
   });
 }
 
@@ -230,6 +254,191 @@ function updateEmployeeRole() {
   .catch(err => console.error(err));
 }
 
+// Not required functions
+function updateEmployeeManager() {
+  new Employee().getEmployees()
+      .then(employees => {
+          inquirer.prompt([
+              {
+                  type: 'list',
+                  name: 'employeeId',
+                  message: "Select the employee whose manager you want to update:",
+                  choices: employees.map(emp => ({ name: emp.name, value: emp.id }))
+              },
+              {
+                  type: 'list',
+                  name: 'managerId',
+                  message: "Select the new manager:",
+                  choices: employees.map(emp => ({ name: emp.name, value: emp.id })).concat([{ name: 'None', value: null }])
+              }
+          ]).then(answers => {
+              const employee = new Employee();
+              employee.updateEmployeeManager(answers.employeeId, answers.managerId)
+                  .then(() => {
+                      console.log('Employee manager updated successfully');
+                      mainMenu();
+                  })
+                  .catch(err => console.error(err));
+          });
+      })
+      .catch(err => console.error(err));
+}
+
+function viewEmployeesByManager() {
+  new Employee().getEmployees()
+      .then(employees => {
+          inquirer.prompt([
+              {
+                  type: 'list',
+                  name: 'managerId',
+                  message: "Select a manager to view their employees:",
+                  choices: employees.map(emp => ({ name: emp.name, value: emp.id })).concat([{ name: 'None', value: null }])
+              }
+          ]).then(answer => {
+              const employee = new Employee();
+              employee.viewEmployeesByManager(answer.managerId)
+                  .then(() => mainMenu())
+                  .catch(err => console.error(err));
+          });
+      })
+      .catch(err => console.error(err));
+}
+
+
+function viewEmployeesByDepartment() {
+  const department = new Department();
+  department.getDepartments()
+      .then(departments => {
+          inquirer.prompt([
+              {
+                  type: 'list',
+                  name: 'departmentId',
+                  message: "Select a department to view its employees:",
+                  choices: departments.map(dept => ({ name: dept.name, value: dept.id }))
+              }
+          ]).then(answer => {
+              const employee = new Employee();
+              employee.viewEmployeesByDepartment(answer.departmentId)
+                  .then(() => mainMenu())
+                  .catch(err => console.error(err));
+          });
+      })
+      .catch(err => console.error(err));
+}
+
+function deleteDepartment() {
+  const department = new Department();
+  department.getDepartments()
+      .then(departments => {
+          inquirer.prompt([
+              {
+                  type: 'list',
+                  name: 'departmentId',
+                  message: "Select a department to delete:",
+                  choices: departments.map(dept => ({ name: dept.name, value: dept.id }))
+              }
+          ]).then(answer => {
+              department.deleteDepartment(answer.departmentId)
+                  .then(() => {
+                      console.log('Department deleted successfully');
+                      mainMenu();
+                  })
+                  .catch(err => console.error(err));
+          });
+      })
+      .catch(err => console.error(err));
+}
+
+
+function deleteRole() {
+  const role = new Role();
+  role.getRoles()
+      .then(roles => {
+          inquirer.prompt([
+              {
+                  type: 'list',
+                  name: 'roleId',
+                  message: "Select a role to delete:",
+                  choices: roles.map(role => ({ name: role.title, value: role.id }))
+              }
+          ]).then(answer => {
+              role.deleteRole(answer.roleId)
+                  .then(() => {
+                      console.log('Role deleted successfully');
+                      mainMenu();
+                  })
+                  .catch(err => console.error(err));
+          });
+      })
+      .catch(err => console.error(err));
+}
+
+function deleteRole() {
+  const role = new Role();
+  role.getRoles()
+      .then(roles => {
+          inquirer.prompt([
+              {
+                  type: 'list',
+                  name: 'roleId',
+                  message: "Select a role to delete:",
+                  choices: roles.map(role => ({ name: role.title, value: role.id }))
+              }
+          ]).then(answer => {
+              role.deleteRole(answer.roleId)
+                  .then(() => {
+                      console.log('Role deleted successfully');
+                      mainMenu();
+                  })
+                  .catch(err => console.error(err));
+          });
+      })
+      .catch(err => console.error(err));
+}
+
+function deleteEmployee() {
+  const employee = new Employee();
+  employee.getEmployees()
+      .then(employees => {
+          inquirer.prompt([
+              {
+                  type: 'list',
+                  name: 'employeeId',
+                  message: "Select an employee to delete:",
+                  choices: employees.map(emp => ({ name: emp.name, value: emp.id }))
+              }
+          ]).then(answer => {
+              employee.deleteEmployee(answer.employeeId)
+                  .then(() => {
+                      console.log('Employee deleted successfully');
+                      mainMenu();
+                  })
+                  .catch(err => console.error(err));
+          });
+      })
+      .catch(err => console.error(err));
+}
+
+
+function viewDepartmentBudget() {
+  const department = new Department();
+  department.getDepartments()
+      .then(departments => {
+          inquirer.prompt([
+              {
+                  type: 'list',
+                  name: 'departmentId',
+                  message: "Select a department to view its total budget:",
+                  choices: departments.map(dept => ({ name: dept.name, value: dept.id }))
+              }
+          ]).then(answer => {
+              department.viewDepartmentBudget(answer.departmentId)
+                  .then(() => mainMenu())
+                  .catch(err => console.error(err));
+          });
+      })
+      .catch(err => console.error(err));
+}
 
 
 
