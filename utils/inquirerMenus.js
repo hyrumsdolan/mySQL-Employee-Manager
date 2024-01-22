@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const connection = require('../db/config');
+const Department = require('../lib/Department');
 
 function mainMenu() {
     inquirer.prompt([
@@ -58,9 +59,11 @@ function mainMenu() {
   }
 
   function viewDepartments() {
-    console.log('Viewing all departments...');
-    mainMenu();
-  }
+    const department = new Department();
+    department.viewAllDepartments()
+        .then(() => mainMenu())
+        .catch(err => console.error(err));
+}
   
   function viewRoles() {
     console.log('Viewing all roles...');

@@ -1,6 +1,7 @@
 const connection = require('./db/config');
 const { mainMenu } = require('./utils/inquirerMenus');
 
+
 connection.connect(err => {
     if (err) {
         console.error('Error connecting: ' + err.stack);
@@ -10,6 +11,8 @@ connection.connect(err => {
 
     mainMenu();
 });
+
+
 
 process.on('exit', () => {
     connection.end();
